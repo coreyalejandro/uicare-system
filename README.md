@@ -2,91 +2,109 @@
 
 UICare is a collection of React components designed to make web applications more accessible, intuitive, and supportive of users' mental well-being. It focuses on creating interfaces that are comfortable for neurodivergent users while enhancing the experience for everyone.
 
+## Installation
+
+```bash
+# Using npm
+npm install uicare
+
+# Using yarn
+yarn add uicare
+
+# Using pnpm
+pnpm add uicare
+```
+
+## Quick Start
+
+1. Add the required CSS to your project:
+```css
+/* In your globals.css or equivalent */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+.reality-layer {
+  min-height: 100vh;
+  transition: all 0.5s ease-in-out;
+}
+
+.reality-layer.ninja {
+  filter: contrast(1.3) brightness(0.7) saturate(1.4);
+  background: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+}
+
+.reality-layer.red {
+  filter: sepia(1) hue-rotate(320deg) saturate(2.5);
+  background: linear-gradient(rgba(255, 0, 0, 0.05), rgba(255, 0, 0, 0.05));
+}
+```
+
+2. Wrap your application with the providers:
+```jsx
+import { SettingsProvider, RealityProvider } from 'uicare';
+
+function App() {
+  return (
+    <SettingsProvider>
+      <RealityProvider>
+        {/* Your application components */}
+      </RealityProvider>
+    </SettingsProvider>
+  );
+}
+```
+
+3. Add the components where needed:
+```jsx
+import { RealityFilter, NinjaPresence, SettingsPanel } from 'uicare';
+
+function Layout() {
+  return (
+    <>
+      <RealityFilter />
+      <NinjaPresence />
+      <SettingsPanel />
+    </>
+  );
+}
+```
+
 ## Features
 
 - **Reality Filters**: Allow users to switch between different visual modes to suit their preferences.
 - **Ninja Presence**: A subtle, animated indicator that provides gentle visual feedback without causing distractions.
 - **Trauma-Informed Interactions**: Components designed with sensitivity to potential triggers, ensuring a safe user experience.
 
-## Getting Started
+## Components
 
-### Prerequisites
+### RealityProvider
+The main provider that enables reality filters in your application.
 
-- Node.js 14.x or later
-- npm or yarn
+### RealityFilter
+A component that allows users to switch between different visual modes.
 
-### Installation
+### NinjaPresence
+A subtle indicator that provides gentle visual feedback.
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/uicare.git
-   cd uicare
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
-## Usage
-
-### Basic Implementation
-
-```jsx
-import { RealityProvider } from './components/RealityProvider';
-import { RealityFilter } from './components/RealityFilter';
-import { NinjaPresence } from './components/NinjaPresence';
-
-function App() {
-  return (
-    <RealityProvider>
-      <RealityFilter />
-      <NinjaPresence />
-      {/* Your application components */}
-    </RealityProvider>
-  );
-}
-```
-
-### Reality Filters
-
-Reality Filters allow users to switch between different visual modes:
-
-```jsx
-<RealityFilter />
-```
-
-Available filters:
-- **Standard**: The default visual mode with no filters applied.
-- **Ninja Vision**: Increases contrast and reduces brightness for a more focused view.
-- **Protocol**: Applies a red-tinted filter with subtle audio feedback.
-
-### Ninja Presence
-
-Ninja Presence is a subtle indicator that provides gentle visual feedback:
-
-```jsx
-<NinjaPresence />
-```
+### SettingsPanel
+A panel that allows users to customize various aspects of UICare.
 
 ## Customization
 
 UICare is designed to be highly customizable. You can modify the appearance and behavior of components by:
 
-1. Adjusting CSS variables in `globals.css`
-2. Modifying component styles
-3. Extending component functionality
+1. Adjusting CSS variables in your styles
+2. Using the SettingsPanel for user-level customization
+3. Extending components for advanced customization
 
 For detailed customization instructions, see the [Documentation](/documentation).
 
@@ -106,3 +124,44 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - Inspired by the need for more accessible and user-friendly web interfaces
 - Special thanks to the neurodivergent community for their insights and feedback
+
+# Development Environment Setup
+
+## Cursor MCP Configuration
+
+To set up your development environment with Cursor, you'll need to configure the MCP servers. This project uses a full-stack configuration that includes:
+
+- Web development tools (Chrome DevTools Protocol)
+- Database development (PostgreSQL)
+- Core Docker functionality
+
+### Setup Instructions
+
+1. Copy the contents of `mcp-config-template.json` to your Cursor MCP configuration:
+   ```bash
+   cp mcp-config-template.json ~/.cursor/mcp.json
+   ```
+
+2. Make sure Docker Desktop is running on your system
+
+3. Required ports:
+   - 8811: Core MCP Docker functionality
+   - 9222: Chrome DevTools Protocol
+   - 5432: PostgreSQL Database
+
+### Database Connection Details
+
+The PostgreSQL database is configured with:
+- Host: localhost
+- Port: 5432
+- Username: cursor
+- Password: cursor
+- Default database: cursor
+
+Connection string: `postgresql://cursor:cursor@localhost:5432/cursor`
+
+### Web Development
+
+Chrome DevTools will be available at:
+- URL: http://localhost:9222
+- Use for debugging, profiling, and inspecting web applications
