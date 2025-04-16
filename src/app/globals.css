@@ -22,13 +22,27 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
 }
 
+/* Reality Filter Styles */
 .reality-layer {
-  min-height: 100vh;
-  transition: all 0.5s ease-in-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  transition: all 0.5s ease;
+}
+
+/* Documentation content should not be affected by filters */
+.documentation-content {
+  position: relative;
+  z-index: 51;
+  background-color: var(--background);
 }
 
 .reality-layer.ninja {

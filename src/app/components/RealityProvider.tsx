@@ -44,6 +44,34 @@ export function RealityProvider({ children }: { children: React.ReactNode }) {
     }
   }, [filter, settings.audioEnabled, settings.audioFrequency, settings.audioVolume]);
 
+  // Calculate filter styles based on settings
+  const getFilterStyle = () => {
+    const baseStyle: React.CSSProperties = {
+      minHeight: '100vh',
+      transition: 'all 0.5s ease-in-out',
+    };
+
+    if (filter === 'ninja') {
+      const intensity = settings.filterIntensity.ninja;
+      return {
+        ...baseStyle,
+        filter: `contrast(${1.3 * intensity}) brightness(${0.7 * intensity}) saturate(${1.4 * intensity})`,
+        background: `linear-gradient(rgba(0, 0, 0, ${0.1 * intensity}), rgba(0, 0, 0, ${0.1 * intensity}))`,
+      };
+    }
+
+    if (filter === 'red') {
+      const intensity = settings.filterIntensity.protocol;
+      return {
+        ...baseStyle,
+        filter: `sepia(${1 * intensity}) hue-rotate(${320 * intensity}deg) saturate(${2.5 * intensity})`,
+        background: `linear-gradient(rgba(255, 0, 0, ${0.05 * intensity}), rgba(255, 0, 0, ${0.05 * intensity}))`,
+      };
+    }
+
+    return baseStyle;
+  };
+
   const value = {
     filter,
     setFilter,
@@ -51,7 +79,7 @@ export function RealityProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <RealityContext.Provider value={value}>
-      <div className={`reality-layer ${filter}`}>
+      <div style={getFilterStyle()}>
         {children}
       </div>
     </RealityContext.Provider>

@@ -1,18 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { RealityFilter } from '../components/RealityFilter';
+import SettingsPanel from '../components/SettingsPanel';
 
 export default function Documentation() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Fixed header with controls */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-foreground/20 p-4 flex justify-between items-center">
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="text-foreground hover:text-foreground/80 transition-colors">
+            ← Back to Home
+          </Link>
+          <h1 className="text-xl font-bold">UICare Documentation</h1>
+        </div>
+        <div className="flex items-center space-x-4">
+          <RealityFilter />
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            className="p-2 rounded-full bg-foreground/10 hover:bg-foreground/20 transition-colors"
+            aria-label="Settings"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Settings panel */}
+      {showSettings && (
+        <div className="fixed top-16 right-4 z-50">
+          <SettingsPanel />
+        </div>
+      )}
+
+      {/* Main content with padding for fixed header */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 documentation-content mt-16">
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar Navigation */}
           <div className="w-full md:w-64 flex-shrink-0">
-            <div className="sticky top-8">
+            <div className="sticky top-24">
               <h2 className="text-2xl font-bold mb-6">Documentation</h2>
               <nav className="space-y-2">
                 <button 
@@ -133,12 +166,86 @@ function App() {
 
             {activeTab === 'reality-filters' && (
               <div className="prose prose-invert max-w-none">
-                <h1 className="text-3xl font-bold mb-6">Reality Filters</h1>
+                <h1 className="text-3xl font-bold mb-6">Understanding UICare's Reality Filters</h1>
                 
                 <p className="text-lg mb-6">
-                  Reality Filters allow users to switch between different visual modes to suit their preferences and needs. 
-                  This feature is particularly helpful for users with visual sensitivities or those who prefer different 
-                  visual environments.
+                  UICare's reality filters are designed to help users customize their visual experience based on their preferences and needs. 
+                  Each filter has specific effects that can make content more accessible, comfortable, or focused.
+                </p>
+                
+                <h2 className="text-2xl font-bold mt-8 mb-4">Standard Mode</h2>
+                <div className="bg-foreground/5 p-4 rounded-md mb-6">
+                  <h3 className="text-xl font-semibold mb-2">What it does:</h3>
+                  <p>Provides the default visual experience with no filters applied.</p>
+                  
+                  <h3 className="text-xl font-semibold mt-4 mb-2">Benefits for users:</h3>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>Maintains the original design intent of websites and applications</li>
+                    <li>Works well for users who don't experience visual sensitivities</li>
+                    <li>Preserves color accuracy and contrast as designed by content creators</li>
+                  </ul>
+                </div>
+                
+                <h2 className="text-2xl font-bold mt-8 mb-4">Ninja Vision Mode</h2>
+                <div className="bg-foreground/5 p-4 rounded-md mb-6">
+                  <h3 className="text-xl font-semibold mb-2">What it does:</h3>
+                  <p>Enhances visual focus by adjusting contrast, brightness, and saturation.</p>
+                  
+                  <h3 className="text-xl font-semibold mt-4 mb-2">Specific changes:</h3>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li><strong>Increased contrast (1.3×):</strong> Makes text and UI elements stand out more clearly from backgrounds</li>
+                    <li><strong>Reduced brightness (0.7×):</strong> Creates a more comfortable viewing experience in bright environments</li>
+                    <li><strong>Increased saturation (1.4×):</strong> Makes colors more vibrant and distinct</li>
+                    <li><strong>Subtle dark overlay:</strong> Adds a slight darkening effect to reduce eye strain</li>
+                  </ul>
+                  
+                  <h3 className="text-xl font-semibold mt-4 mb-2">Benefits for users:</h3>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>Helps users with visual processing differences focus on content</li>
+                    <li>Reduces eye strain during extended viewing sessions</li>
+                    <li>Makes text more readable for users with visual impairments</li>
+                    <li>Creates a more immersive experience for content that requires attention to detail</li>
+                    <li>Particularly helpful for users with ADHD or visual processing disorders</li>
+                  </ul>
+                </div>
+                
+                <h2 className="text-2xl font-bold mt-8 mb-4">Protocol Mode</h2>
+                <div className="bg-foreground/5 p-4 rounded-md mb-6">
+                  <h3 className="text-xl font-semibold mb-2">What it does:</h3>
+                  <p>Applies a red-tinted filter with subtle audio feedback.</p>
+                  
+                  <h3 className="text-xl font-semibold mt-4 mb-2">Specific changes:</h3>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li><strong>Sepia effect (1×):</strong> Adds a warm, paper-like quality to the screen</li>
+                    <li><strong>Hue rotation (320°):</strong> Shifts colors toward the red spectrum</li>
+                    <li><strong>Increased saturation (2.5×):</strong> Makes colors more intense</li>
+                    <li><strong>Subtle red gradient overlay:</strong> Adds a slight red tint to the entire interface</li>
+                    <li><strong>Audio feedback:</strong> Plays a subtle sound when activated (customizable)</li>
+                  </ul>
+                  
+                  <h3 className="text-xl font-semibold mt-4 mb-2">Benefits for users:</h3>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>Creates a distinct visual environment that can help with focus</li>
+                    <li>The red tint can reduce eye strain in low-light conditions</li>
+                    <li>The audio feedback provides confirmation of mode changes for users who benefit from multi-sensory input</li>
+                    <li>Can help users with light sensitivity or migraines by reducing blue light</li>
+                    <li>The warm color temperature can create a more calming environment</li>
+                    <li>Particularly helpful for users who experience sensory overload in standard viewing modes</li>
+                  </ul>
+                </div>
+                
+                <h2 className="text-2xl font-bold mt-8 mb-4">Customization Options</h2>
+                <p>
+                  All filters can be adjusted through the settings panel:
+                </p>
+                <ul className="list-disc pl-6 space-y-2">
+                  <li><strong>Filter Intensity:</strong> Adjust how strong each filter's effects are (0.5× to 2×)</li>
+                  <li><strong>Audio Settings:</strong> Control whether audio feedback plays and at what volume/frequency</li>
+                  <li><strong>Personal Preferences:</strong> Save your preferred settings for future sessions</li>
+                </ul>
+                <p className="mt-4">
+                  These customizable filters allow users to create a visual environment that works best for their specific needs, 
+                  whether they're neurodivergent, have visual sensitivities, or simply prefer a different viewing experience.
                 </p>
                 
                 <h2 className="text-2xl font-bold mt-8 mb-4">How It Works</h2>
@@ -146,28 +253,6 @@ function App() {
                   The RealityFilter component provides a set of buttons that users can click to switch between different 
                   visual modes. Each mode applies different CSS filters to the entire application, creating a distinct 
                   visual experience.
-                </p>
-                
-                <h2 className="text-2xl font-bold mt-8 mb-4">Available Filters</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="p-6 border border-foreground/20 rounded-lg">
-                    <h3 className="text-xl font-semibold mb-2">Standard</h3>
-                    <p>The default visual mode with no filters applied.</p>
-                  </div>
-                  <div className="p-6 border border-foreground/20 rounded-lg">
-                    <h3 className="text-xl font-semibold mb-2">Ninja Vision</h3>
-                    <p>Increases contrast and reduces brightness for a more focused view.</p>
-                  </div>
-                  <div className="p-6 border border-foreground/20 rounded-lg">
-                    <h3 className="text-xl font-semibold mb-2">Protocol</h3>
-                    <p>Applies a red-tinted filter with subtle audio feedback.</p>
-                  </div>
-                </div>
-                
-                <h2 className="text-2xl font-bold mt-8 mb-4">Customization</h2>
-                <p>
-                  You can customize the Reality Filters by modifying the CSS in the globals.css file. 
-                  Each filter is defined by a CSS class that can be adjusted to create different visual effects.
                 </p>
                 
                 <div className="bg-foreground/5 p-4 rounded-md mt-4">
