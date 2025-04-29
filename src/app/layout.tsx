@@ -2,10 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { RealityProvider } from "./components/RealityProvider";
-import { RealityFilter } from "./components/RealityFilter";
-import { NinjaPresence } from "./components/NinjaPresence";
 import { SettingsProvider } from "./components/SettingsContext";
-import SettingsPanel from "./components/SettingsPanel";
+import { UIcareToolbar } from "./components/UIcareToolbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,13 +24,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased bg-background text-foreground">
+      <body className="font-sans antialiased bg-gradient-to-br from-background to-background/95 text-foreground min-h-screen">
         <SettingsProvider>
           <RealityProvider>
-            {children}
-            <RealityFilter />
-            <NinjaPresence />
-            <SettingsPanel />
+            <div className="relative">
+              {children}
+              <UIcareToolbar />
+            </div>
           </RealityProvider>
         </SettingsProvider>
       </body>

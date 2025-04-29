@@ -2,52 +2,73 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type Settings = {
+interface FilterIntensity {
+  ninja: number;
+  protocol: number;
+}
+
+interface Settings {
   audioEnabled: boolean;
   audioVolume: number;
   audioFrequency: number;
-  filterIntensity: {
-    ninja: number;
-    protocol: number;
-  };
-};
+  filterIntensity: FilterIntensity;
+  theme: 'system' | 'light' | 'dark';
+  reducedMotion: boolean;
+  highContrast: boolean;
+}
 
-type SettingsContextType = {
+interface SettingsContextType {
   settings: Settings;
   updateSettings: (newSettings: Partial<Settings>) => void;
-};
+}
 
 const defaultSettings: Settings = {
-  audioEnabled: true,
-  audioVolume: 0.1,
+  audioEnabled: false,
+  audioVolume: 0.5,
   audioFrequency: 440,
   filterIntensity: {
     ninja: 1,
     protocol: 1,
   },
+  theme: 'system',
+  reducedMotion: false,
+  highContrast: false,
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  const [settings, setSettings] = useState<Settings>(() => {
-    // Load settings from localStorage if available
-    if (typeof window !== 'undefined') {
-      const savedSettings = localStorage.getItem('uicare-settings');
-      if (savedSettings) {
-        return { ...defaultSettings, ...JSON.parse(savedSettings) };
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('uicareSettings');
+    if (savedSettings) {
+      try {
+        const parsedSettings = JSON.parse(savedSettings);
+        setSettings((prevSettings) => ({
+          ...prevSettings,
+          ...parsedSettings,
+        }));
+      } catch (error) {
+        console.error('Failed to parse saved settings:', error);
       }
     }
-    return defaultSettings;
-  });
-
-  // Save settings to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem('uicare-settings', JSON.stringify(settings));
-  }, [settings]);
+  }, []);
 
   const updateSettings = (newSettings: Partial<Settings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    setSettings((prevSettings) => {
+      const updatedSettings = {
+        ...prevSettings,
+        ...newSettings,
+        filterIntensity: {
+          ...prevSettings.filterIntensity,
+          ...(newSettings.filterIntensity || {}),
+        },
+      };
+      localStorage.setItem('uicareSettings', JSON.stringify(updatedSettings));
+      return updatedSettings;
+    });
   };
 
   return (
