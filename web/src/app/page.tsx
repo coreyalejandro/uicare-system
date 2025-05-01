@@ -6,6 +6,7 @@ import Link from 'next/link';
 export default function Home() {
   const featuresRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
+  const demoRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
     ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -22,6 +23,12 @@ export default function Home() {
             className="px-4 py-2 bg-foreground text-background rounded-md hover:opacity-90 transition-opacity"
           >
             Explore Features
+          </button>
+          <button 
+            onClick={() => scrollToSection(demoRef)} 
+            className="px-4 py-2 bg-foreground text-background rounded-md hover:opacity-90 transition-opacity"
+          >
+            Watch Demo
           </button>
           <button 
             onClick={() => scrollToSection(aboutRef)} 
@@ -52,6 +59,13 @@ export default function Home() {
               <h3 className="text-xl font-semibold mb-2">Trauma-Informed</h3>
               <p>Components designed with sensitivity to potential triggers for a safe experience.</p>
             </div>
+          </div>
+        </div>
+
+        <div ref={demoRef} className="mb-16 scroll-mt-20">
+          <h2 className="text-3xl font-bold mb-6">App Demo</h2>
+          <div className="w-full flex justify-center">
+            <video src="/demo.mp4" controls width={720} className="rounded-lg shadow-lg" />
           </div>
         </div>
 

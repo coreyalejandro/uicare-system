@@ -15,6 +15,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "UICare - Enhancing User Interfaces with Wellness in Mind",
   description: "A project dedicated to integrating neurodivergent-friendly features into web applications.",
+  icons: {
+    icon: '/app-icon.svg',
+    apple: '/app-icon.svg',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({

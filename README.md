@@ -1,2 +1,8 @@
-# UICare System
-A unified monorepo housing the MoodRING web app and the UICare VS Code extension—an AI-powered suite built on Microsoft Azure that combines mood-aware UI adaptations with real-time developer distress detection to boost productivity and well-being.
+uicare-system/
+├── README.md        ← ← ← your primary README goes here
+├── web/
+│   ├── public/
+│   ├── src/
+│   └── README.md    ← optional: web-specific instructions
+└── uicare-vscode/   ← or whatever you name your extension folder
+    └── README.md    ← optional: extension-specific instructions
