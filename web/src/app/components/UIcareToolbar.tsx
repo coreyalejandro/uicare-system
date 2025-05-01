@@ -83,8 +83,8 @@ export function UIcareToolbar() {
               {/* Reality Filters */}
               <div className="mb-4">
                 <h3 className="text-white/80 text-sm font-medium mb-2">Reality Filter</h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {['default', 'ninja', 'red'].map((mode) => (
+                <div className="grid grid-cols-4 gap-2">
+                  {['default', 'ninja', 'red', 'focus'].map((mode) => (
                     <button
                       key={mode}
                       onClick={() => setFilter(mode as any)}
@@ -143,7 +143,7 @@ export function UIcareToolbar() {
               </div>
 
               {/* Filter Intensity */}
-              <div>
+              <div className="mb-4">
                 <h3 className="text-white/80 text-sm font-medium mb-2">Filter Intensity</h3>
                 <div className="space-y-3">
                   <div>
@@ -181,6 +181,52 @@ export function UIcareToolbar() {
                       className="w-full accent-white/70"
                     />
                   </div>
+                  
+                  <div>
+                    <label className="block text-white/70 text-xs mb-1">Focus Mode</label>
+                    <input
+                      type="range"
+                      min="0.1"
+                      max="2"
+                      step="0.1"
+                      value={settings.filterIntensity.focus}
+                      onChange={(e) => updateSettings({
+                        filterIntensity: {
+                          ...settings.filterIntensity,
+                          focus: parseFloat(e.target.value)
+                        }
+                      })}
+                      className="w-full accent-white/70"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Memory Bank Access */}
+              <div>
+                <h3 className="text-white/80 text-sm font-medium mb-2">Memory Bank</h3>
+                <a 
+                  href="/memory"
+                  className="block w-full py-2 px-3 bg-blue-500/20 hover:bg-blue-500/30 
+                    text-white/90 text-sm font-medium rounded-lg transition-colors text-center"
+                >
+                  Access Memory Files
+                </a>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <a 
+                    href="/memory/activeContext"
+                    className="py-1.5 px-2 bg-white/5 hover:bg-white/10 
+                      text-white/70 text-xs rounded-lg transition-colors text-center"
+                  >
+                    Active Context
+                  </a>
+                  <a 
+                    href="/memory/progress"
+                    className="py-1.5 px-2 bg-white/5 hover:bg-white/10 
+                      text-white/70 text-xs rounded-lg transition-colors text-center"
+                  >
+                    Progress
+                  </a>
                 </div>
               </div>
             </motion.div>
@@ -189,4 +235,4 @@ export function UIcareToolbar() {
       </motion.div>
     </motion.div>
   );
-} 
+}

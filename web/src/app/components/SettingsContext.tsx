@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 interface FilterIntensity {
   ninja: number;
   protocol: number;
+  focus: number;
 }
 
 interface Settings {
@@ -29,6 +30,7 @@ const defaultSettings: Settings = {
   filterIntensity: {
     ninja: 1,
     protocol: 1,
+    focus: 1,
   },
   theme: 'system',
   reducedMotion: false,
@@ -84,4 +86,4 @@ export function useSettings() {
     throw new Error('useSettings must be used within a SettingsProvider');
   }
   return context;
-} 
+}

@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useSettings } from './SettingsContext';
 
-type RealityFilter = 'default' | 'ninja' | 'red';
+type RealityFilter = 'default' | 'ninja' | 'red' | 'focus';
 
 type RealityContextType = {
   filter: RealityFilter;
@@ -69,6 +69,15 @@ export function RealityProvider({ children }: { children: React.ReactNode }) {
       };
     }
 
+    if (filter === 'focus') {
+      const intensity = settings.filterIntensity.focus || 1; // Default to 1 if not set
+      return {
+        ...baseStyle,
+        filter: `saturate(${0.7 * intensity}) contrast(${1.1 * intensity})`,
+        background: `radial-gradient(circle at center, rgba(0,0,0,0), rgba(0,0,0,${0.15 * intensity}))`,
+      };
+    }
+
     return baseStyle;
   };
 
@@ -84,4 +93,4 @@ export function RealityProvider({ children }: { children: React.ReactNode }) {
       </div>
     </RealityContext.Provider>
   );
-} 
+}
