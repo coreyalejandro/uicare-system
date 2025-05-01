@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github.css';
+import 'highlight.js/styles/github-dark.css';
 
 interface MemoryViewerProps {
   content: string;
@@ -15,15 +15,25 @@ export default function MemoryViewer({ content, fileName }: MemoryViewerProps) {
   
   useEffect(() => {
     // Configure marked with syntax highlighting
-    marked.setOptions({
-      highlight: (code, lang) => {
-        if (lang && hljs.getLanguage(lang)) {
-          return hljs.highlight(code, { language: lang }).value;
+    const renderer = new marked.Renderer();
+    
+    // Add syntax highlighting to the renderer
+    renderer.code = function({ text, lang }) {
+      if (lang && hljs.getLanguage(lang)) {
+        try {
+          const highlighted = hljs.highlight(text, { language: lang }).value;
+          return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+        } catch (err) {
+          console.error('Error highlighting code:', err);
         }
-        return hljs.highlightAuto(code).value;
-      },
-      breaks: true,
-      gfm: true
+      }
+      return `<pre><code>${text}</code></pre>`;
+    };
+
+    marked.setOptions({
+      renderer,
+      gfm: true,
+      breaks: true
     });
     
     // Generate table of contents
@@ -51,7 +61,10 @@ export default function MemoryViewer({ content, fileName }: MemoryViewerProps) {
       : content;
     
     // Render markdown
-    setRenderedContent(marked(contentWithToc));
+    const rendered = marked.parse(contentWithToc);
+    if (typeof rendered === 'string') {
+      setRenderedContent(rendered);
+    }
   }, [content, fileName]);
 
   return (

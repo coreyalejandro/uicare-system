@@ -13,6 +13,10 @@ const nextConfig = {
     });
     return config;
   },
+  env: {
+    NEXT_PUBLIC_AZURE_OPENAI_ENDPOINT: process.env.NEXT_PUBLIC_AZURE_OPENAI_ENDPOINT || 'mock',
+    NEXT_PUBLIC_AZURE_OPENAI_KEY: process.env.NEXT_PUBLIC_AZURE_OPENAI_KEY || 'mock'
+  }
 };
 
 module.exports = nextConfig; 

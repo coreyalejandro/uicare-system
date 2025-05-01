@@ -1,87 +1,51 @@
-'use client';
+"use client";
 
-import { useRef } from 'react';
-import Link from 'next/link';
+import React, { useState } from "react";
+import { detectLoop, getAdvice } from "../lib/aiService";
 
 export default function Home() {
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const aboutRef = useRef<HTMLDivElement>(null);
-  const demoRef = useRef<HTMLDivElement>(null);
+  const [text, setText] = useState("");
+  const [steps, setSteps] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  async function onCheck() {
+    setError(null);
+    setSteps([]);
+    try {
+      const { loopDetected, details } = await detectLoop(text);
+      if (loopDetected) {
+        const advice = await getAdvice(details);
+        setSteps(advice);
+      } else {
+        setSteps(["No loop detected. Keep going!"]);
+      }
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-8 md:p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
-        <h1 className="text-4xl font-bold mb-8">Welcome to UICare</h1>
-        <p className="text-xl mb-4">Enhancing User Interfaces with Wellness in Mind</p>
-        <div className="flex gap-4 mb-16">
-          <button 
-            onClick={() => scrollToSection(featuresRef)} 
-            className="px-4 py-2 bg-foreground text-background rounded-md hover:opacity-90 transition-opacity"
-          >
-            Explore Features
-          </button>
-          <button 
-            onClick={() => scrollToSection(demoRef)} 
-            className="px-4 py-2 bg-foreground text-background rounded-md hover:opacity-90 transition-opacity"
-          >
-            Watch Demo
-          </button>
-          <button 
-            onClick={() => scrollToSection(aboutRef)} 
-            className="px-4 py-2 border border-foreground rounded-md hover:bg-foreground/10 transition-colors"
-          >
-            Learn More
-          </button>
-          <Link 
-            href="/documentation"
-            className="px-4 py-2 border border-foreground rounded-md hover:bg-foreground/10 transition-colors"
-          >
-            Documentation
-          </Link>
-        </div>
-
-        <div ref={featuresRef} className="mb-16 scroll-mt-20">
-          <h2 className="text-3xl font-bold mb-6">Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 border border-foreground/20 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Reality Filters</h3>
-              <p>Switch between different visual modes to suit your preferences and needs.</p>
-            </div>
-            <div className="p-6 border border-foreground/20 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Ninja Presence</h3>
-              <p>A subtle indicator that provides gentle visual feedback without distractions.</p>
-            </div>
-            <div className="p-6 border border-foreground/20 rounded-lg">
-              <h3 className="text-xl font-semibold mb-2">Trauma-Informed</h3>
-              <p>Components designed with sensitivity to potential triggers for a safe experience.</p>
-            </div>
-          </div>
-        </div>
-
-        <div ref={demoRef} className="mb-16 scroll-mt-20">
-          <h2 className="text-3xl font-bold mb-6">App Demo</h2>
-          <div className="w-full flex justify-center">
-            <video src="/demo.mp4" controls width={720} className="rounded-lg shadow-lg" />
-          </div>
-        </div>
-
-        <div ref={aboutRef} className="mb-16 scroll-mt-20">
-          <h2 className="text-3xl font-bold mb-6">About UICare</h2>
-          <p className="mb-4">
-            UICare is designed to embed wellness-centric components into web projects, focusing on accessibility and user comfort. 
-            By incorporating features like customizable reality filters and trauma-informed interactions, 
-            UICare aims to support neurodivergent users effectively.
-          </p>
-          <p>
-            Our mission is to create interfaces that are not just functional, but supportive of mental well-being, 
-            making the digital world more accessible and comfortable for everyone.
-          </p>
-        </div>
-      </div>
+    <main className="p-4 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">MoodRING Loop Checker</h1>
+      <textarea
+        className="w-full border rounded p-2 mb-4 text-black dark:text-white bg-white dark:bg-gray-800"
+        value={text}
+        onChange={e => setText(e.target.value)}
+        rows={6}
+        placeholder="Paste your work here…"
+      />
+      <button
+        className="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700"
+        onClick={onCheck}
+      >
+        Check for Loop
+      </button>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+      <ul className="list-disc pl-5 space-y-1">
+        {steps.map((s, i) => (
+          <li key={i}>{s}</li>
+        ))}
+      </ul>
     </main>
   );
 }
