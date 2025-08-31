@@ -3,7 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { RealityProvider } from "./components/RealityProvider";
 import { SettingsProvider } from "./components/SettingsContext";
-import { UIcareToolbar } from "./components/UIcareToolbar";
+import dynamic from "next/dynamic";
+const UIcareToolbar = dynamic(
+  () => import("./components/UIcareToolbar").then(mod => mod.UIcareToolbar),
+  { ssr: false }
+);
 
 const inter = Inter({
   subsets: ["latin"],
