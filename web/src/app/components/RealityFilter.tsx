@@ -1,12 +1,16 @@
 'use client';
 
 import { useReality } from './RealityProvider';
+import { spacing } from '@/design-system';
 
 export const RealityFilter = () => {
   const { filter, setFilter } = useReality();
-  
+
   return (
-    <div className="fixed top-4 right-4 flex gap-2 bg-background/80 backdrop-blur-sm p-2 rounded-lg shadow-lg">
+    <div
+      className="fixed flex gap-2 bg-background/80 backdrop-blur-sm rounded-lg shadow-lg"
+      style={{ top: spacing.md, right: spacing.md, padding: spacing.sm }}
+    >
       {[
         { id: 'default' as const, label: 'Standard', icon: '🌐' },
         { id: 'ninja' as const, label: 'Ninja Vision', icon: '👁' },
@@ -15,17 +19,16 @@ export const RealityFilter = () => {
         <button
           key={id}
           onClick={() => setFilter(id)}
-          className={`px-3 py-1.5 rounded-md transition-all duration-200 ${
-            filter === id
-              ? 'bg-foreground text-background'
-              : 'hover:bg-foreground/10'
+          className={`rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring ${
+            filter === id ? 'bg-foreground text-background' : 'hover:bg-foreground/10'
           }`}
+          style={{ padding: `${spacing.xs} ${spacing.sm}` }}
           aria-pressed={filter === id}
         >
-          <span className="mr-1">{icon}</span>
+          <span style={{ marginRight: spacing.xs }}>{icon}</span>
           {label}
         </button>
       ))}
     </div>
   );
-}; 
+};

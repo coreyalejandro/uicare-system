@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { detectLoop, getAdvice } from "../lib/aiService";
+import { spacing, typography, colors } from "@/design-system";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -25,23 +26,33 @@ export default function Home() {
   }
 
   return (
-    <main className="p-4 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">MoodRING Loop Checker</h1>
+    <main className="max-w-xl mx-auto" style={{ padding: spacing.md }}>
+      <h1 className="font-bold" style={{ fontSize: typography.h1, marginBottom: spacing.md }}>
+        MoodRING Loop Checker
+      </h1>
       <textarea
-        className="w-full border rounded p-2 mb-4 text-black dark:text-white bg-white dark:bg-gray-800"
+        aria-label="Work text"
+        className="w-full border rounded text-black dark:text-white bg-white dark:bg-gray-800"
+        style={{ padding: spacing.sm, marginBottom: spacing.md }}
         value={text}
         onChange={e => setText(e.target.value)}
         rows={6}
         placeholder="Paste your work here…"
       />
       <button
-        className="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700"
+        aria-label="Check for loop"
+        className="bg-accent text-accent-foreground rounded hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring"
+        style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md }}
         onClick={onCheck}
       >
         Check for Loop
       </button>
-      {error && <p className="text-red-600 mb-4">{error}</p>}
-      <ul className="list-disc pl-5 space-y-1">
+      {error && (
+        <p style={{ color: colors.danger, marginBottom: spacing.md }}>
+          {error}
+        </p>
+      )}
+      <ul className="list-disc" style={{ paddingLeft: spacing.md }}>
         {steps.map((s, i) => (
           <li key={i}>{s}</li>
         ))}
