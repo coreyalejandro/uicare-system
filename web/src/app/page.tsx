@@ -4,8 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { detectLoop, getAdvice } from "../lib/aiService";
 import { assessRisk } from "../lib/riskService";
 import { getManiaRisk } from "../lib/maniaService";
+import { simulateFutureStates, FutureState } from "../lib/proactiveAgent";
 import { spacing, typography, colors } from "@/design-system";
 import PersonalizedContentPlayer from "./components/PersonalizedContentPlayer";
+import FutureSimulations from "./components/FutureSimulations";
 import { autosaveDraft, generateImprovedDraft } from "../lib/draftEnhancer";
 
 export default function Home() {
@@ -17,6 +19,8 @@ export default function Home() {
   const keystrokes = useRef(0);
   const [showRecover, setShowRecover] = useState(false);
   const [drafts, setDrafts] = useState<{original:{name:string;content:string}[];improved:{name:string;content:string}[]}>({original:[], improved:[]});
+  const [simulations, setSimulations] = useState<FutureState[]>([]);
+  const [showFuture, setShowFuture] = useState(false);
 
   useEffect(() => {
     async function checkMania() {
@@ -135,6 +139,22 @@ export default function Home() {
       >
         Recover Drafts
       </button>
+      <button
+        aria-label="Preview future"
+        className="bg-accent text-accent-foreground rounded hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring"
+        style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md, marginLeft: spacing.sm }}
+        onClick={async () => {
+          try {
+            const sims = await simulateFutureStates('current repo snapshot');
+            setSimulations(sims);
+            setShowFuture(true);
+          } catch (err) {
+            console.error(err);
+          }
+        }}
+      >
+        Preview Future
+      </button>
       {error && (
         <p style={{ color: colors.danger, marginBottom: spacing.md }}>
           {error}
@@ -159,6 +179,9 @@ export default function Home() {
         <div style={{ marginTop: spacing.lg }}>
           <PersonalizedContentPlayer queue={mediaQueue} />
         </div>
+      )}
+      {showFuture && (
+        <FutureSimulations simulations={simulations} onClose={() => setShowFuture(false)} />
       )}
       {showRecover && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
