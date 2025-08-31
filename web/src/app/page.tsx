@@ -5,12 +5,14 @@ import { detectLoop, getAdvice } from "../lib/aiService";
 import { assessRisk } from "../lib/riskService";
 import { getManiaRisk } from "../lib/maniaService";
 import { spacing, typography, colors } from "@/design-system";
+import PersonalizedContentPlayer from "./components/PersonalizedContentPlayer";
 
 export default function Home() {
   const [text, setText] = useState("");
   const [steps, setSteps] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [crisis, setCrisis] = useState(false);
+  const [mediaQueue, setMediaQueue] = useState<string[]>([]);
 
   useEffect(() => {
     async function checkMania() {
@@ -18,6 +20,13 @@ export default function Home() {
         const risk = await getManiaRisk();
         if (risk > 0.7) {
           setCrisis(true);
+          try {
+            const res = await fetch('/api/settings');
+            const prefs = await res.json();
+            setMediaQueue(prefs.favoriteTracks || []);
+          } catch (err) {
+            console.error('Failed to load preferences', err);
+          }
           alert("Elevated mania risk detected. Support resources have been shown.");
         }
       } catch (e) {
@@ -93,6 +102,11 @@ export default function Home() {
             <li key={i}>{s}</li>
           ))}
         </ul>
+      )}
+      {crisis && mediaQueue.length > 0 && (
+        <div style={{ marginTop: spacing.lg }}>
+          <PersonalizedContentPlayer queue={mediaQueue} />
+        </div>
       )}
     </main>
   );
