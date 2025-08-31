@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 
@@ -60,10 +61,11 @@ export default function MemoryViewer({ content, fileName }: MemoryViewerProps) {
       ? content.replace('# ', `# ${fileName}\n\n${toc}\n\n# `) 
       : content;
     
-    // Render markdown
+    // Render markdown and sanitize the result to prevent XSS
     const rendered = marked.parse(contentWithToc);
     if (typeof rendered === 'string') {
-      setRenderedContent(rendered);
+      const sanitized = DOMPurify.sanitize(rendered);
+      setRenderedContent(sanitized);
     }
   }, [content, fileName]);
 
