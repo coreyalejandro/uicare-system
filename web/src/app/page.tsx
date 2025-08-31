@@ -2,17 +2,26 @@
 
 import React, { useState } from "react";
 import { detectLoop, getAdvice } from "../lib/aiService";
+import { assessRisk } from "../lib/riskService";
 import { spacing, typography, colors } from "@/design-system";
 
 export default function Home() {
   const [text, setText] = useState("");
   const [steps, setSteps] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [crisis, setCrisis] = useState(false);
 
   async function onCheck() {
     setError(null);
     setSteps([]);
+    setCrisis(false);
     try {
+      const { score } = await assessRisk(text);
+      if (score > 0.8) {
+        setCrisis(true);
+        return;
+      }
+
       const { loopDetected, details } = await detectLoop(text);
       if (loopDetected) {
         const advice = await getAdvice(details);
@@ -52,11 +61,21 @@ export default function Home() {
           {error}
         </p>
       )}
-      <ul className="list-disc" style={{ paddingLeft: spacing.md }}>
-        {steps.map((s, i) => (
-          <li key={i}>{s}</li>
-        ))}
-      </ul>
+      {crisis ? (
+        <div style={{ color: colors.danger, marginBottom: spacing.md }}>
+          <p>If you're in crisis, please reach out:</p>
+          <ul className="list-disc" style={{ paddingLeft: spacing.md }}>
+            <li><a href="tel:988">Call 988 Suicide & Crisis Lifeline</a></li>
+            <li><a href="https://www.crisistextline.org/">Text HOME to 741741</a></li>
+          </ul>
+        </div>
+      ) : (
+        <ul className="list-disc" style={{ paddingLeft: spacing.md }}>
+          {steps.map((s, i) => (
+            <li key={i}>{s}</li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
