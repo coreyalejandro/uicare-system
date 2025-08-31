@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { detectLoop, getAdvice } from "../lib/aiService";
 import { assessRisk } from "../lib/riskService";
+import { getManiaRisk } from "../lib/maniaService";
 import { spacing, typography, colors } from "@/design-system";
 
 export default function Home() {
@@ -10,6 +11,23 @@ export default function Home() {
   const [steps, setSteps] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [crisis, setCrisis] = useState(false);
+
+  useEffect(() => {
+    async function checkMania() {
+      try {
+        const risk = await getManiaRisk();
+        if (risk > 0.7) {
+          setCrisis(true);
+          alert("Elevated mania risk detected. Support resources have been shown.");
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    checkMania();
+    const id = setInterval(checkMania, 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
 
   async function onCheck() {
     setError(null);
