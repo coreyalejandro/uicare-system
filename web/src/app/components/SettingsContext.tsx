@@ -16,6 +16,7 @@ interface Settings {
   theme: 'system' | 'light' | 'dark';
   reducedMotion: boolean;
   highContrast: boolean;
+  calmingContent: string[];
 }
 
 interface SettingsContextType {
@@ -35,6 +36,7 @@ const defaultSettings: Settings = {
   theme: 'system',
   reducedMotion: false,
   highContrast: false,
+  calmingContent: [],
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
