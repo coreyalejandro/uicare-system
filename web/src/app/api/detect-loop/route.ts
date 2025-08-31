@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Configuration, OpenAIApi } from "openai";
+import { requireAuth } from "@/lib/auth";
 
 const config = new Configuration({
   apiKey: process.env.NEXT_PUBLIC_AZURE_OPENAI_KEY,
@@ -9,6 +10,9 @@ const config = new Configuration({
 const openai = new OpenAIApi(config);
 
 export async function POST(req: Request) {
+  const unauthorized = requireAuth(req);
+  if (unauthorized) return unauthorized;
+
   try {
     const { text } = await req.json();
     
