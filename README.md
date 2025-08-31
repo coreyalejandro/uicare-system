@@ -81,6 +81,12 @@ This project consists of two AI agents working in tandem:
 - Expand pattern recognition capabilities
 - Add monitoring dashboard
 
+## Security
+To protect users from cross-site scripting (XSS) attacks, the project sanitizes
+markdown content before rendering it in the UI. Components that display
+markdown, such as the `MemoryViewer`, use a trusted HTML sanitizer to remove
+potentially malicious scripts while preserving safe markup.
+
 ## Team
 - Project built for hackathon
 - Focus on improving user experience through AI assistance
