@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useReality } from './RealityProvider';
 import { useSettings } from './SettingsContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { spacing } from '@/design-system';
 
 export function UIcareToolbar() {
   const { filter, setFilter } = useReality();
@@ -28,15 +29,16 @@ export function UIcareToolbar() {
   };
 
   return (
-    <motion.div
-      drag
-      dragMomentum={false}
-      dragElastic={0}
-      onDragStart={() => setIsDragging(true)}
-      onDragEnd={handleDragEnd}
-      animate={{ x: position.x, y: position.y }}
-      className="fixed top-4 left-4 z-50"
-    >
+      <motion.div
+        drag
+        dragMomentum={false}
+        dragElastic={0}
+        onDragStart={() => setIsDragging(true)}
+        onDragEnd={handleDragEnd}
+        animate={{ x: position.x, y: position.y }}
+        className="fixed z-50"
+        style={{ top: spacing.md, left: spacing.md }}
+      >
       <motion.div
         initial={false}
         animate={{
@@ -46,13 +48,16 @@ export function UIcareToolbar() {
         className="bg-black/80 backdrop-blur-lg rounded-xl border border-white/20 overflow-hidden"
       >
         {/* Toolbar Header */}
-        <div 
-          className="h-12 flex items-center px-3 cursor-move"
+        <div
+          className="flex items-center cursor-move"
+          style={{ height: spacing.xxl, paddingLeft: spacing.sm, paddingRight: spacing.sm }}
           onMouseEnter={() => !isDragging && setIsExpanded(true)}
         >
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+            aria-label="Toggle UI controls"
+            className="rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+            style={{ width: spacing.lg, height: spacing.lg }}
           >
             <span className="text-white text-xs">UI</span>
           </button>

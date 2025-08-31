@@ -2,28 +2,42 @@
 
 import { useState } from 'react';
 import { useSettings } from './SettingsContext';
+import { spacing, typography } from '@/design-system';
 
 export default function SettingsPanel() {
   const { settings, updateSettings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-4 left-4 z-50">
+    <div className="fixed z-50" style={{ bottom: spacing.md, left: spacing.md }}>
       <button
+        aria-label="Open settings"
+        aria-expanded={isOpen}
+        aria-controls="settings-panel"
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-full bg-foreground/10 backdrop-blur-sm hover:bg-foreground/20 transition-colors"
+        className="rounded-full bg-foreground/10 backdrop-blur-sm hover:bg-foreground/20 transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+        style={{ padding: spacing.sm }}
       >
         ⚙️
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-12 left-0 w-80 bg-background/90 backdrop-blur-sm border border-foreground/20 rounded-lg p-4 shadow-lg">
-          <h3 className="text-lg font-semibold mb-4">Settings</h3>
-          
+        <div
+          id="settings-panel"
+          role="dialog"
+          className="absolute bg-background/90 backdrop-blur-sm border border-foreground/20 rounded-lg shadow-lg"
+          style={{ bottom: spacing.xl, left: 0, width: spacing.panel, padding: spacing.md }}
+        >
+          <h3 className="font-semibold" style={{ fontSize: typography.h3, marginBottom: spacing.md }}>
+            Settings
+          </h3>
+
           <div className="space-y-4">
             {/* Audio Settings */}
             <div>
-              <h4 className="font-medium mb-2">Audio Feedback</h4>
+              <h4 className="font-medium" style={{ marginBottom: spacing.sm }}>
+                Audio Feedback
+              </h4>
               <div className="space-y-2">
                 <label className="flex items-center space-x-2">
                   <input
@@ -34,9 +48,11 @@ export default function SettingsPanel() {
                   />
                   <span>Enable Audio</span>
                 </label>
-                
+
                 <div>
-                  <label className="block text-sm mb-1">Volume</label>
+                  <label className="block text-sm" style={{ marginBottom: spacing.xs }}>
+                    Volume
+                  </label>
                   <input
                     type="range"
                     min="0"
@@ -47,9 +63,11 @@ export default function SettingsPanel() {
                     className="w-full"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm mb-1">Frequency (Hz)</label>
+                  <label className="block text-sm" style={{ marginBottom: spacing.xs }}>
+                    Frequency (Hz)
+                  </label>
                   <input
                     type="range"
                     min="220"
@@ -65,40 +83,50 @@ export default function SettingsPanel() {
 
             {/* Filter Intensity Settings */}
             <div>
-              <h4 className="font-medium mb-2">Filter Intensity</h4>
+              <h4 className="font-medium" style={{ marginBottom: spacing.sm }}>
+                Filter Intensity
+              </h4>
               <div className="space-y-2">
                 <div>
-                  <label className="block text-sm mb-1">Ninja Vision</label>
+                  <label className="block text-sm" style={{ marginBottom: spacing.xs }}>
+                    Ninja Vision
+                  </label>
                   <input
                     type="range"
                     min="0.5"
                     max="2"
                     step="0.1"
                     value={settings.filterIntensity.ninja}
-                    onChange={(e) => updateSettings({
-                      filterIntensity: {
-                        ...settings.filterIntensity,
-                        ninja: parseFloat(e.target.value)
-                      }
-                    })}
+                    onChange={(e) =>
+                      updateSettings({
+                        filterIntensity: {
+                          ...settings.filterIntensity,
+                          ninja: parseFloat(e.target.value)
+                        }
+                      })
+                    }
                     className="w-full"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm mb-1">Protocol</label>
+                  <label className="block text-sm" style={{ marginBottom: spacing.xs }}>
+                    Protocol
+                  </label>
                   <input
                     type="range"
                     min="0.5"
                     max="2"
                     step="0.1"
                     value={settings.filterIntensity.protocol}
-                    onChange={(e) => updateSettings({
-                      filterIntensity: {
-                        ...settings.filterIntensity,
-                        protocol: parseFloat(e.target.value)
-                      }
-                    })}
+                    onChange={(e) =>
+                      updateSettings({
+                        filterIntensity: {
+                          ...settings.filterIntensity,
+                          protocol: parseFloat(e.target.value)
+                        }
+                      })
+                    }
                     className="w-full"
                   />
                 </div>
@@ -109,4 +137,4 @@ export default function SettingsPanel() {
       )}
     </div>
   );
-} 
+}
