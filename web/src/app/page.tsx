@@ -9,6 +9,8 @@ import { spacing, typography, colors } from "@/design-system";
 import PersonalizedContentPlayer from "./components/PersonalizedContentPlayer";
 import FutureSimulations from "./components/FutureSimulations";
 import { autosaveDraft, generateImprovedDraft } from "../lib/draftEnhancer";
+import GuidedTutorial, { Tutorial } from "./components/GuidedTutorial";
+import tutorialData from "../../../tutorials/basic.json";
 
 export default function Home() {
   const [text, setText] = useState("");
@@ -21,6 +23,8 @@ export default function Home() {
   const [drafts, setDrafts] = useState<{original:{name:string;content:string}[];improved:{name:string;content:string}[]}>({original:[], improved:[]});
   const [simulations, setSimulations] = useState<FutureState[]>([]);
   const [showFuture, setShowFuture] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(false);
+  const tutorial: Tutorial = tutorialData as Tutorial;
 
   useEffect(() => {
     async function checkMania() {
@@ -62,6 +66,7 @@ export default function Home() {
   }, [crisis, text]);
 
   async function onCheck() {
+    if (showTutorial) return;
     setError(null);
     setSteps([]);
     setCrisis(false);
@@ -117,7 +122,10 @@ export default function Home() {
         aria-label="Improve draft"
         className="bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-ring"
         style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md, marginLeft: spacing.sm }}
-        onClick={() => generateImprovedDraft(text)}
+        onClick={() => {
+          if (showTutorial) return;
+          generateImprovedDraft(text);
+        }}
       >
         Improve Draft
       </button>
@@ -126,6 +134,7 @@ export default function Home() {
         className="bg-muted text-muted-foreground rounded hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-ring"
         style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md, marginLeft: spacing.sm }}
         onClick={async () => {
+          if (showTutorial) return;
           try {
             const res = await fetch('/api/drafts');
             if (res.ok) {
@@ -144,6 +153,7 @@ export default function Home() {
         className="bg-accent text-accent-foreground rounded hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring"
         style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md, marginLeft: spacing.sm }}
         onClick={async () => {
+          if (showTutorial) return;
           try {
             const sims = await simulateFutureStates('current repo snapshot');
             setSimulations(sims);
@@ -154,6 +164,14 @@ export default function Home() {
         }}
       >
         Preview Future
+      </button>
+      <button
+        aria-label="Toggle tutorial"
+        className="bg-muted text-muted-foreground rounded hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-ring"
+        style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md, marginLeft: spacing.sm }}
+        onClick={() => setShowTutorial(s => !s)}
+      >
+        {showTutorial ? "Hide Tutorial" : "Show Tutorial"}
       </button>
       {error && (
         <p style={{ color: colors.danger, marginBottom: spacing.md }}>
@@ -207,6 +225,9 @@ export default function Home() {
             </button>
           </div>
         </div>
+      )}
+      {showTutorial && (
+        <GuidedTutorial tutorial={tutorial} onFinish={() => setShowTutorial(false)} />
       )}
     </main>
   );
