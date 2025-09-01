@@ -9,6 +9,7 @@ import { spacing, typography, colors } from "@/design-system";
 import PersonalizedContentPlayer from "./components/PersonalizedContentPlayer";
 import FutureSimulations from "./components/FutureSimulations";
 import { autosaveDraft, generateImprovedDraft } from "../lib/draftEnhancer";
+import { storeEmbedding } from "../lib/brain";
 import GuidedTutorial, { Tutorial } from "./components/GuidedTutorial";
 import tutorialData from "../../../tutorials/basic.json";
 
@@ -25,6 +26,7 @@ export default function Home() {
   const [showFuture, setShowFuture] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const tutorial: Tutorial = tutorialData as Tutorial;
+  const userId = "demo-user";
 
   useEffect(() => {
     async function checkMania() {
@@ -54,6 +56,7 @@ export default function Home() {
     const interval = setInterval(() => {
       if (text) {
         autosaveDraft(text);
+        storeEmbedding(text, { timestamp: new Date().toISOString(), userId });
       }
     }, 10000);
     return () => clearInterval(interval);
@@ -70,6 +73,7 @@ export default function Home() {
     setError(null);
     setSteps([]);
     setCrisis(false);
+    await storeEmbedding(text, { timestamp: new Date().toISOString(), userId });
     try {
       const { score } = await assessRisk(text);
       if (score > 0.8) {
@@ -104,6 +108,7 @@ export default function Home() {
           keystrokes.current += 1;
           if (keystrokes.current >= 20) {
             autosaveDraft(e.target.value);
+            storeEmbedding(e.target.value, { timestamp: new Date().toISOString(), userId });
             keystrokes.current = 0;
           }
         }}
