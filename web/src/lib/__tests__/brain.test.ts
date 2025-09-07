@@ -26,6 +26,18 @@ describe('brain', () => {
     expect(results).toEqual([]);
   });
 
+  it('returns empty array when k is 0', async () => {
+    const { searchEmbedding } = await import('../brain');
+    const results = await searchEmbedding('hello', 0);
+    expect(results).toEqual([]);
+  });
+
+  it('returns empty array when k is negative', async () => {
+    const { searchEmbedding } = await import('../brain');
+    const results = await searchEmbedding('hello', -3);
+    expect(results).toEqual([]);
+  });
+
   it('limits results to k', async () => {
     const { storeEmbedding, searchEmbedding } = await import('../brain');
     await storeEmbedding('a', {});
