@@ -40,9 +40,17 @@ describe('brain', () => {
 
   it('limits results to k', async () => {
     const { storeEmbedding, searchEmbedding } = await import('../brain');
+    // Store two embeddings with distinct texts
     await storeEmbedding('a', {});
     await storeEmbedding('b', {});
-    const results = await searchEmbedding('test', 1);
+    // Search for the closest embedding to 'a'
+    const results = await searchEmbedding('a', 1);
     expect(results.length).toBe(1);
+    // Assert that the returned embedding is the closest match to the query
+    expect(results[0].text).toBe('a');
+    // Optionally, check that the similarity score is the highest possible (if available)
+    if (results[0].similarity !== undefined) {
+      expect(results[0].similarity).toBeGreaterThanOrEqual(0.99);
+    }
   });
 });
