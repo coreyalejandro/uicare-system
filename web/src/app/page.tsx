@@ -64,7 +64,7 @@ export default function Home() {
         className="bg-accent text-accent-foreground rounded hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring"
         style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md }}
         onClick={onCheck}
-        disabled={loading}
+        disabled={loading || !isOnline}
       >
         {loading ? "Checking..." : "Check for Loop"}
       </button>
