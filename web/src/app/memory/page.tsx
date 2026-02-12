@@ -1,8 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import MemoryNavigator from '../components/MemoryNavigator';
-import MemoryViewer from '../components/MemoryViewer';
+import dynamic from 'next/dynamic';
+const MemoryNavigator = dynamic(() => import('../components/MemoryNavigator'), {
+  ssr: false,
+});
+const MemoryViewer = dynamic(() => import('../components/MemoryViewer'), {
+  ssr: false,
+});
 
 const MEMORY_FILES = [
   { 

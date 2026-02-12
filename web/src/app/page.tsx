@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import React, { useState, useEffect, useRef } from "react";
 import { detectLoop, getAdvice } from "../lib/aiService";
 import { assessRisk } from "../lib/riskService";
@@ -17,6 +18,19 @@ export default function Home() {
   const [text, setText] = useState("");
   const [steps, setSteps] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    const update = () => setIsOnline(navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
   const [crisis, setCrisis] = useState(false);
   const [mediaQueue, setMediaQueue] = useState<string[]>([]);
   const keystrokes = useRef(0);
@@ -72,6 +86,11 @@ export default function Home() {
     if (showTutorial) return;
     setError(null);
     setSteps([]);
+    if (!isOnline) {
+      setError("You are offline. Please reconnect and try again.");
+      return;
+    }
+    setLoading(true);
     setCrisis(false);
     await storeEmbedding(text, { timestamp: new Date().toISOString(), userId });
     try {
@@ -90,6 +109,8 @@ export default function Home() {
       }
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -120,9 +141,15 @@ export default function Home() {
         className="bg-accent text-accent-foreground rounded hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring"
         style={{ padding: `${spacing.sm} ${spacing.md}`, marginBottom: spacing.md }}
         onClick={onCheck}
+        disabled={loading || !isOnline}
       >
-        Check for Loop
+        {loading ? "Checking..." : "Check for Loop"}
       </button>
+      {!isOnline && (
+        <p style={{ color: colors.danger, marginBottom: spacing.md }}>
+          You are offline. Results may be outdated.
+        </p>
+      )}
       <button
         aria-label="Improve draft"
         className="bg-secondary text-secondary-foreground rounded hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-ring"
@@ -183,6 +210,15 @@ export default function Home() {
           {error}
         </p>
       )}
+      {loading ? (
+        <ul className="list-disc" style={{ paddingLeft: spacing.md }}>
+          {[1, 2, 3].map(i => (
+            <li
+              key={i}
+              className="animate-pulse bg-gray-200 dark:bg-gray-700 h-4 mb-2 rounded"
+            ></li>
+          ))}
+        </ul>
       {crisis ? (
         <div style={{ color: colors.danger, marginBottom: spacing.md }}>
           <p>If you're in crisis, please reach out:</p>
