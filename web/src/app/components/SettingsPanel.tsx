@@ -7,6 +7,19 @@ import { spacing, typography } from '@/design-system';
 export default function SettingsPanel() {
   const { settings, updateSettings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
+  const [newContent, setNewContent] = useState('');
+
+  const addContent = () => {
+    const item = newContent.trim();
+    if (item) {
+      updateSettings({ calmingContent: [...settings.calmingContent, item] });
+      setNewContent('');
+    }
+  };
+
+  const removeContent = (index: number) => {
+    updateSettings({ calmingContent: settings.calmingContent.filter((_, i) => i !== index) });
+  };
 
   return (
     <div className="fixed z-50" style={{ bottom: spacing.md, left: spacing.md }}>
@@ -130,6 +143,41 @@ export default function SettingsPanel() {
                     className="w-full"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Calming Content Library */}
+            <div>
+              <h4 className="font-medium" style={{ marginBottom: spacing.sm }}>
+                Calming Content
+              </h4>
+              <ul className="space-y-1 mb-2">
+                {settings.calmingContent.map((item, idx) => (
+                  <li key={idx} className="flex items-center justify-between">
+                    <span className="break-all text-sm">{item}</span>
+                    <button
+                      onClick={() => removeContent(idx)}
+                      className="text-xs px-1 py-0.5 border rounded"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={newContent}
+                  onChange={(e) => setNewContent(e.target.value)}
+                  className="flex-1 border rounded px-2 py-1 text-black"
+                  placeholder="/calming-content/file.mp3"
+                />
+                <button
+                  onClick={addContent}
+                  className="px-2 py-1 border rounded"
+                >
+                  Add
+                </button>
               </div>
             </div>
           </div>

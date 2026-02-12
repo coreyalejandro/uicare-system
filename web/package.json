@@ -39,6 +39,8 @@
     "tailwind-merge": "^2.2.0",
     "next-pwa": "^5.6.0",
     "@next/bundle-analyzer": "^14.2.28"
+    "sql.js": "^1.13.0",
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.0.0",
