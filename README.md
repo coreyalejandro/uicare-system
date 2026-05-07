@@ -1,3 +1,40 @@
+> RESEARCH PROTOTYPE. Not a medical device, clinical monitoring system, crisis-response tool, or substitute for professional care. Behavioral signals detected by this system are heuristic indicators only. Nothing in this system constitutes a clinical assessment, diagnosis, or recommendation for intervention. If you or someone you know is in crisis, contact the 988 Suicide and Crisis Lifeline (call or text 988) or emergency services.
+
+## Safety, Consent, and Limits
+
+### Consent Model
+
+UICare will not activate behavioral monitoring without explicit, granular user consent. The planned Quintessential Sign-Off protocol requires the user to review and authenticate their own behavioral baseline before the system begins deviation detection. Consent is revocable at any time. On revocation, behavioral data is cleared locally. No behavioral data is transmitted to external systems without separate explicit consent.
+
+### Data Minimization
+
+All behavioral signal processing is designed to run locally. The current implementation uses Azure OpenAI for loop detection; this dependency is flagged as a privacy risk and is on the roadmap to be replaced with local-first signal evaluation for the core safety state machine.
+
+### User Override and Appeal
+
+A user who disagrees with the system state assessment can manually override their current state at any time. The system is designed to respect self-determination. Denial is recognized as a common response pattern for neurodivergent users in high-intensity states; the system logs the override but does not block the user from proceeding.
+
+### Failure Modes
+
+- False positive: system flags elevated state during a productive focused-work period. Mitigation: user override always available.
+- False negative: system does not detect a genuine distress state. Mitigation: self-declaration crisis trigger always available, independent of automated detection.
+- Missing baseline: system has insufficient data to establish a 7-day behavioral baseline. Mitigation: system defaults to NOMINAL state (no gates activated) until baseline is established.
+- Agent unavailability: Azure OpenAI endpoint unavailable. Mitigation: local safety logic (state machine, action gates) continues operating; AI advice is degraded gracefully.
+
+### Ethical Risks
+
+Behavioral surveillance of neurodivergent users carries inherent risks: stigma, overreach, false authority, and erosion of agency. This system is designed to give agency back, not to remove it. Key design constraints: (1) the system never acts without consent, (2) all interventions are suggestions, not blocks, except in explicitly user-authorized gate states, (3) no data is shared with third parties, (4) the system is transparent about its own uncertainty.
+
+### What This System Does Not Detect or Guarantee
+
+- Clinical mental health conditions
+- Suicidal ideation or self-harm risk beyond the documented crisis threshold
+- Medication effects or physiological states
+- Interventions are not therapeutic and are not delivered by licensed clinicians
+- Baseline accuracy is heuristic, not clinically validated
+
+---
+
 # UICare-System
 
 ## What This Is
