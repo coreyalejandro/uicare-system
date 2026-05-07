@@ -78,23 +78,36 @@ Any deviation from this authenticated baseline means something is wrong. The key
 
 ### Agent Architecture
 
+The system connects four layers: the web frontend, the agent service, two specialized AI agents, and the Azure OpenAI API. User behavioral signals flow from the MoodRING Next.js app through aiService.js to MonitorAgent and RescueAgent. When MonitorAgent detects a deviation from the user's authenticated baseline, it triggers RescueAgent, which returns a structured intervention payload that the web app renders as a MoodRING overlay.
+
+```mermaid
+flowchart TD
+  U["User\nbehavioral activity stream"]
+  WEB["web/src/app/\nMoodRING Next.js app\nreality filters, overlay UI"]
+  SVC["aiService.js\nagent service layer\nAzure OpenAI integration"]
+  MA["MonitorAgent\nport 3001\ncontinuous baseline comparison\nabsence-over-presence detection\nOutputs: DeviationEvent or NOMINAL"]
+  RA["RescueAgent\nport 3002\nneurodivergent-friendly framing\nnever punitive, always precise\nOutputs: InterventionPayload"]
+  AZ["Azure OpenAI\ngpt-4o-mini\nloop detection and intervention generation"]
+  LOCAL["Local safety state machine\naction gates, state transitions\nno AI dependency"]
+  OVR["MoodRING overlay\nIntervention displayed to user"]
+  LOG["Intervention log\ntraceability record"]
+
+  U --> WEB
+  WEB -- "POST /api/detect-loop" --> SVC
+  SVC --> MA
+  SVC --> RA
+  MA --> AZ
+  RA --> AZ
+  AZ -- "DeviationEvent: severity ELEVATED or higher" --> RA
+  AZ -- "NOMINAL: no deviation detected" --> MA
+  AZ -- "Azure OpenAI unavailable" --> LOCAL
+  LOCAL -- "degraded mode: no AI advice\nstate machine continues" --> WEB
+  RA -- "InterventionPayload" --> WEB
+  WEB --> OVR
+  OVR --> LOG
 ```
-User Activity Stream
-        ↓
-┌─────────────────────┐
-│   MonitorAgent      │  Continuous behavioral analysis
-│   (Confidante)      │  Baseline comparison
-│                     │  Absence detection
-│                     │  "Reading the Room" engine
-└────────┬────────────┘
-         ↓ deviation detected
-┌─────────────────────┐
-│   RescueAgent       │  Targeted intervention
-│   (The Rescue)      │  Clear, actionable steps
-│                     │  Neurodivergent-friendly framing
-│                     │  Never punitive, always precise
-└─────────────────────┘
-```
+
+**Reading this diagram without sight:** The user's behavioral activity stream enters the MoodRING Next.js app at web/src/app. The app sends POST requests to the /api/detect-loop endpoint handled by aiService.js, the agent service layer with Azure OpenAI integration. aiService.js routes requests to MonitorAgent on port 3001 and RescueAgent on port 3002. Both agents call Azure OpenAI using gpt-4o-mini. If Azure OpenAI is unavailable, the system falls back to a local safety state machine with action gates — the state machine continues operating in degraded mode with no AI advice. When MonitorAgent detects deviation at severity ELEVATED or higher, it triggers RescueAgent, which returns an InterventionPayload using neurodivergent-friendly framing. The InterventionPayload flows back to the web app, which renders it as a MoodRING overlay to the user. Every intervention is written to an intervention log for traceability.
 
 ### Roadmap: Reading the Room Data
 
@@ -105,6 +118,66 @@ The current system detects behavioral loops in text and interaction patterns. Th
 - What micro-movements have disappeared from their routine?
 
 This is the missing piece in behavioral detection. Current sensors capture actions. UICare will capture the *absence* of expected actions — the most reliable predictor of mood state and behavioral crisis.
+
+### Behavioral State Machine
+
+The system tracks the user through five named states. Every transition is triggered by a specific condition. The USER_OVERRIDE state is always reachable from INTERVENTION — this is not a safety net, it is a design requirement: the system never blocks a user who asserts self-determination.
+
+```mermaid
+stateDiagram-v2
+  [*] --> NO_BASELINE : System initialized, no consent yet or calibration in progress
+  NO_BASELINE --> NOMINAL : Quintessential Sign-Off complete, baseline established
+  NOMINAL --> ELEVATED : MonitorAgent detects deviation from authenticated baseline
+  ELEVATED --> INTERVENTION : RescueAgent delivers InterventionPayload to MoodRING overlay
+  INTERVENTION --> NOMINAL : User acknowledges intervention, system returns to monitoring
+  INTERVENTION --> USER_OVERRIDE : User explicitly asserts override
+  USER_OVERRIDE --> NOMINAL : Override logged to intervention log, system defers to user
+  ELEVATED --> ELEVATED : Deviation persists, no user response yet
+  NOMINAL --> NOMINAL : Continuous monitoring, no deviation detected
+```
+
+**Reading this diagram without sight:** The system starts in NO_BASELINE — before the user has consented or while baseline calibration is in progress. When the Quintessential Sign-Off is complete and the behavioral baseline is established, the system enters NOMINAL. In NOMINAL, MonitorAgent runs continuous monitoring. When MonitorAgent detects deviation from the authenticated baseline, the state moves to ELEVATED. In ELEVATED, RescueAgent delivers an InterventionPayload to the MoodRING overlay, moving the state to INTERVENTION. From INTERVENTION, the user can acknowledge the intervention and return to NOMINAL, or explicitly assert an override to enter USER_OVERRIDE. In USER_OVERRIDE, the override is logged to the intervention log and the system returns to NOMINAL, deferring to the user's self-determination. Both ELEVATED and NOMINAL have self-transitions for persistence when conditions are unchanged.
+
+## User Journey: First Run to Active Monitoring
+
+The following sequence shows every step from the user's first interaction with the system through active behavioral monitoring. Every actor and system name is the exact component name from the codebase.
+
+```mermaid
+sequenceDiagram
+  actor User
+  participant Web as web/src/app/ (MoodRING)
+  participant SVC as aiService.js
+  participant MA as MonitorAgent (port 3001)
+  participant RA as RescueAgent (port 3002)
+
+  User->>Web: First run — consent screen displayed
+  Web->>User: Show data minimization policy and granular consent options
+  User->>Web: Grant consent (revocable at any time)
+  Web->>MA: Initialize 7-day baseline calibration
+  Note over MA: Collecting behavioral baseline (7 days)
+  MA->>Web: Baseline established
+  Web->>User: Quintessential Sign-Off prompt — review your behavioral profile
+  User->>Web: "That's me" — authenticate baseline
+  Web->>MA: Activate deviation detection
+  loop Continuous monitoring
+    MA->>SVC: Compare current behavior to authenticated baseline
+    SVC->>MA: NOMINAL — no deviation detected
+  end
+  MA->>SVC: DeviationEvent (severity: ELEVATED)
+  SVC->>RA: Trigger intervention generation
+  RA->>Web: InterventionPayload (neurodivergent-friendly steps)
+  Web->>User: MoodRING overlay — intervention displayed
+  alt User acknowledges
+    User->>Web: Acknowledge intervention
+    Web->>MA: Return to MONITORING state
+  else User overrides
+    User->>Web: Assert override
+    Web->>SVC: Log override to intervention log
+    SVC->>MA: Return to MONITORING state
+  end
+```
+
+**Reading this diagram without sight:** Five actors participate: the User, the MoodRING Next.js app at web/src/app/, aiService.js, MonitorAgent on port 3001, and RescueAgent on port 3002. On first run, the web app shows a consent screen with data minimization policy and granular consent options. After the user grants consent, the web app tells MonitorAgent to begin 7-day baseline calibration. After 7 days, the baseline is established and the web app shows the Quintessential Sign-Off prompt. The user reviews their behavioral profile and authenticates it with "That's me." The web app then activates deviation detection in MonitorAgent. During continuous monitoring, MonitorAgent sends current behavior to aiService.js, which returns NOMINAL when no deviation is detected. When MonitorAgent detects a DeviationEvent at severity ELEVATED, aiService.js triggers RescueAgent to generate an intervention. RescueAgent returns an InterventionPayload to the web app, which displays it as a MoodRING overlay. The user then either acknowledges the intervention — returning the system to MONITORING state — or asserts an override, which logs to the intervention log and also returns to MONITORING state.
 
 ## What Is Real Now
 
