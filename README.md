@@ -1,3 +1,5 @@
+# UICare — developer safety monitor (research prototype)
+
 > RESEARCH PROTOTYPE. Not a medical device, clinical monitoring system, crisis-response tool, or substitute for professional care. Behavioral signals detected by this system are heuristic indicators only. Nothing in this system constitutes a clinical assessment, diagnosis, or recommendation for intervention. If you or someone you know is in crisis, contact the 988 Suicide and Crisis Lifeline (call or text 988) or emergency services.
 
 ## Safety, Consent, and Limits
